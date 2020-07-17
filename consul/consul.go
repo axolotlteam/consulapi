@@ -1,10 +1,53 @@
 package consul
 
 import (
+	"context"
+	"io/ioutil"
+	"log"
 	"strings"
+	"time"
 
+	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/chromedp"
 	"github.com/hashicorp/consul/api"
 )
+
+// CloneKV -
+func CloneKV(target, self string) error {
+	targetC := &api.Config{
+		Address: target,
+	}
+
+	// Get a new client
+	targetClient, err := api.NewClient(targetC)
+	if err != nil {
+		panic(err)
+	}
+
+	selfC := &api.Config{
+		Address: self,
+	}
+
+	// Get a new client
+	selfClient, err := api.NewClient(selfC)
+	if err != nil {
+		panic(err)
+	}
+
+	keys := GetAllKV(target)
+	for _, k := range keys {
+		pair, _, _ := targetClient.KV().Get(k, nil)
+		p := &api.KVPair{
+			Key:   k,
+			Value: pair.Value,
+		}
+
+		selfClient.KV().Put(p, nil)
+	}
+
+	return nil
+
+}
 
 // Deregister -
 func Deregister(host, key string) {
@@ -52,4 +95,43 @@ func DeregisterAll(host string) {
 			panic(err)
 		}
 	}
+}
+
+func GetAllKV(host string) []string {
+	// create chrome instance
+	ctx, cancel := chromedp.NewContext(
+		context.Background(),
+		chromedp.WithLogf(log.Printf),
+	)
+	defer cancel()
+
+	// create a timeout
+	ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
+	defer cancel()
+
+	var nodes []*cdp.Node
+	var buf []byte
+	err := chromedp.Run(ctx,
+		// 訪問頁面
+		chromedp.Navigate(host+"/ui/dc1/kv"),
+		// 等待該元件顯示
+		chromedp.WaitVisible(`#ember31 > header > div > div > div > div > a`),
+		chromedp.Nodes(".file a", &nodes, chromedp.ByQueryAll),
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := ioutil.WriteFile("fullScreenshot.png", buf, 0644); err != nil {
+		log.Fatal(err)
+	}
+
+	keys := make([]string, len(nodes))
+	for i, v := range nodes {
+		href := v.AttributeValue("href")
+
+		keys[i] = strings.Split(href, "/")[4]
+	}
+
+	return keys
 }

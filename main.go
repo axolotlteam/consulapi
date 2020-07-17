@@ -1,9 +1,9 @@
 package main
 
 import (
-	"consulapi/cmd"
+	"consulapi/consul"
 )
 
 func main() {
-	cmd.Execute()
+	consul.CloneKV("http://192.168.8.40:8500", "http://localhost:8500")
 }
