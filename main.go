@@ -5,5 +5,7 @@ import (
 )
 
 func main() {
-	consul.CloneKV("http://192.168.8.40:8500", "http://localhost:8500")
+
+	// 目標 - 對象
+	consul.CloneKV("http://localhost:8500", "http://192.168.31.229:8500")
 }

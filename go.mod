@@ -3,7 +3,7 @@ module consulapi
 go 1.14
 
 require (
-	github.com/chromedp/cdproto v0.0.0-20200706151146-b7f349b11751
+	github.com/chromedp/cdproto v0.0.0-20200709115526-d1f6fc58448b
 	github.com/chromedp/chromedp v0.5.3
 	github.com/davecgh/go-spew v1.1.1
 	github.com/gobwas/pool v0.2.1 // indirect

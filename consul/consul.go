@@ -97,6 +97,7 @@ func DeregisterAll(host string) {
 	}
 }
 
+// GetAllKV -
 func GetAllKV(host string) []string {
 	// create chrome instance
 	ctx, cancel := chromedp.NewContext(
@@ -106,7 +107,7 @@ func GetAllKV(host string) []string {
 	defer cancel()
 
 	// create a timeout
-	ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
 	var nodes []*cdp.Node
@@ -115,7 +116,7 @@ func GetAllKV(host string) []string {
 		// 訪問頁面
 		chromedp.Navigate(host+"/ui/dc1/kv"),
 		// 等待該元件顯示
-		chromedp.WaitVisible(`#ember31 > header > div > div > div > div > a`),
+		chromedp.WaitVisible(`.type-create`),
 		chromedp.Nodes(".file a", &nodes, chromedp.ByQueryAll),
 	)
 
