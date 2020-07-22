@@ -6,4 +6,7 @@ var (
 
 	// ConsulHost -
 	ConsulHost string
+
+	// ConsulClient - 
+	ConsulClient string
 )
