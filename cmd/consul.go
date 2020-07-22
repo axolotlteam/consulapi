@@ -24,7 +24,7 @@ func init() {
 }
 
 func start() {
-	consul.GetAllKV(env.ConsulHost)
+	// consul.GetAllKV(env.ConsulHost)
 	switch env.DeRegister {
 	case "all":
 		consul.DeregisterAll(env.ConsulHost)
